@@ -150,10 +150,10 @@ ________________________________________________________________________________
 📝 Acknowledgements
 
 Built by
-Arnab Deb
-Aditya Kumar Das
-Abhishek Kumar Gautam
-Girisha Bhattar
+1.Arnab Deb
+2.Aditya Kumar Das
+3.Abhishek Kumar Gautam
+4.Girisha Bhattar
 
 Skills Demonstrated: Deep Learning, FastAPI, Chrome Extensions, Cybersecurity.
 
