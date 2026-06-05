@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phish Guard Details</title>
+  <link rel="stylesheet" href="details.css" />
+</head>
+<body>
+  <div class="page">
+    <h1>URL Analysis Report</h1>
+
+    <div class="card" id="summaryCard">
+      <h2>Summary</h2>
+      <div id="summary"></div>
+    </div>
+
+    <div class="card">
+      <h2>Confidence Chart</h2>
+      <canvas id="confidenceChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Risk Chart</h2>
+      <canvas id="riskChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Explanations</h2>
+      <div id="explanations"></div>
+    </div>
+  </div>
+
+  <script src="chart.min.js"></script>
+  <script src="details.js"></script>
+</body>
+</html>

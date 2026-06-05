@@ -1,18 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "Phishing URL Detector",
+  "name": "Phish Guard",
   "version": "1.0",
-  "description": "Warns you if the current site looks like phishing.",
-  "permissions": ["tabs", "scripting", "activeTab"],
-  "host_permissions": ["<all_urls>"],
+  "description": "Detect phishing URLs and show analysis details.",
+  "permissions": ["tabs", "storage", "activeTab"],
+  "host_permissions": ["http://localhost:8000/*"],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Phish Guard"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content_script.js"],
-      "run_at": "document_end"
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["details.html", "details.css", "details.js", "chart.min.js"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
