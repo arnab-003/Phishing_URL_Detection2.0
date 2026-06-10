@@ -1,7 +1,7 @@
 function normalizeHostname(url) {
   try {
     return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
-  } catch (e) {
+  } catch {
     return "";
   }
 }
@@ -20,7 +20,7 @@ function normalizeUrl(url) {
     }
 
     return normalized.toLowerCase();
-  } catch (e) {
+  } catch {
     return "";
   }
 }
@@ -31,13 +31,10 @@ function getShortDisplayUrl(url, maxLength = 45) {
     const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
     const path = parsed.pathname === "/" ? "" : parsed.pathname;
     const shortBase = `${host}${path}`;
-
-    if (shortBase.length <= maxLength) {
-      return shortBase;
-    }
-
-    return `${shortBase.slice(0, maxLength - 3)}...`;
-  } catch (e) {
+    return shortBase.length <= maxLength
+      ? shortBase
+      : `${shortBase.slice(0, maxLength - 3)}...`;
+  } catch {
     return url || "";
   }
 }
@@ -47,7 +44,7 @@ function matchRule(url, rules = []) {
   const fullUrl = normalizeUrl(url);
 
   return rules.some((entry) => {
-    const cleanEntry = (entry || "").trim().toLowerCase();
+    const cleanEntry = String(entry || "").trim().toLowerCase();
     if (!cleanEntry) return false;
 
     if (cleanEntry.startsWith("http://") || cleanEntry.startsWith("https://")) {
@@ -70,26 +67,49 @@ function isIgnoredUrl(url) {
   );
 }
 
-function sendPredictionToTab(tabId, tabUrl, data) {
-  const enriched = {
-    ...data,
+function buildPrediction(tabId, tabUrl, data = {}) {
+  const rawLabel = String(data.label || "").trim().toLowerCase();
+  let riskLevel = String(data.risk_level || "").trim().toLowerCase();
+
+  if (!riskLevel) {
+    if (rawLabel === "safe") riskLevel = "safe";
+    else if (rawLabel === "phishing") riskLevel = "danger";
+    else if (rawLabel === "suspicious") riskLevel = "suspicious";
+    else riskLevel = "unknown";
+  }
+
+  const explanations = Array.isArray(data.explanations)
+    ? data.explanations
+    : data.reason
+      ? [data.reason]
+      : [];
+
+  return {
     url: tabUrl,
+    pageUrl: tabUrl,
+    tabId,
+    timestamp: Date.now(),
     short_url: getShortDisplayUrl(tabUrl),
     normalized_url: normalizeUrl(tabUrl),
     normalized_host: normalizeHostname(tabUrl),
-    tabId: tabId,
-    pageUrl: tabUrl,
-    timestamp: Date.now()
+    label: String(data.label || "UNKNOWN").toUpperCase(),
+    prob_legit: Number(data.prob_legit ?? 0),
+    risk_level: riskLevel,
+    explanations,
+    trusted_by_user: Boolean(data.trusted_by_user),
+    manual_override: data.manual_override || null
   };
+}
 
-  chrome.storage.local.set({
-    latestPrediction: enriched
-  });
+function storeAndNotify(tabId, tabUrl, data) {
+  const payload = buildPrediction(tabId, tabUrl, data);
 
-  chrome.tabs.sendMessage(tabId, enriched, () => {
-    if (chrome.runtime.lastError) {
-      console.warn("No content script in this tab:", chrome.runtime.lastError.message);
-    }
+  chrome.storage.local.set({ latestPrediction: payload }, () => {
+    chrome.tabs.sendMessage(tabId, payload, () => {
+      if (chrome.runtime.lastError) {
+        console.warn("Content script message skipped:", chrome.runtime.lastError.message);
+      }
+    });
   });
 }
 
@@ -101,39 +121,27 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const safeUrls = res.safeUrls || [];
     const dangerUrls = res.dangerUrls || [];
 
-    console.log("Checking URL:", tab.url);
-    console.log("Normalized URL:", normalizeUrl(tab.url));
-    console.log("Hostname:", normalizeHostname(tab.url));
-    console.log("Safe rules:", safeUrls);
-    console.log("Danger rules:", dangerUrls);
-
     if (matchRule(tab.url, safeUrls)) {
-      const trustedData = {
+      storeAndNotify(tabId, tab.url, {
         label: "SAFE",
-        prob_legit: 1.0,
+        prob_legit: 1,
         risk_level: "safe",
-        explanations: ["This URL/domain is manually marked safe by the user."],
+        explanations: ["This URL or domain is manually marked safe by the user."],
         trusted_by_user: true,
         manual_override: "safe"
-      };
-
-      sendPredictionToTab(tabId, tab.url, trustedData);
-      console.log("Safe override matched. Skipping backend prediction.");
+      });
       return;
     }
 
     if (matchRule(tab.url, dangerUrls)) {
-      const blockedData = {
+      storeAndNotify(tabId, tab.url, {
         label: "PHISHING",
-        prob_legit: 0.0,
+        prob_legit: 0,
         risk_level: "danger",
-        explanations: ["This URL/domain is manually marked dangerous by the user."],
+        explanations: ["This URL or domain is manually marked dangerous by the user."],
         trusted_by_user: false,
         manual_override: "danger"
-      };
-
-      sendPredictionToTab(tabId, tab.url, blockedData);
-      console.log("Danger override matched. Skipping backend prediction.");
+      });
       return;
     }
 
@@ -144,12 +152,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       },
       body: JSON.stringify({ url: tab.url })
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
-        sendPredictionToTab(tabId, tab.url, data);
+        storeAndNotify(tabId, tab.url, data);
       })
       .catch((err) => {
-        console.error("Predict error:", err);
+        console.error("Prediction request failed:", err);
+        storeAndNotify(tabId, tab.url, {
+          label: "SUSPICIOUS",
+          prob_legit: 0.5,
+          risk_level: "suspicious",
+          explanations: ["Could not contact the local prediction server."]
+        });
       });
   });
 });

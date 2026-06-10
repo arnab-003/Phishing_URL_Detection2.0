@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "Detect phishing URLs and show analysis details.",
   "permissions": ["tabs", "storage", "activeTab"],
-  "host_permissions": ["http://localhost:8000/*"],
+  "host_permissions": ["http://localhost:8000/*", "<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },

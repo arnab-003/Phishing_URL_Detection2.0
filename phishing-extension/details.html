@@ -7,27 +7,32 @@
   <link rel="stylesheet" href="details.css" />
 </head>
 <body>
-  <div class="page">
-    <h1>URL Analysis Report</h1>
+  <div class="container">
+    <div class="card">
+      <h1>Phish Guard Analysis</h1>
+      <p class="muted">Detailed information for the most recent scanned page.</p>
+    </div>
 
-    <div class="card" id="summaryCard">
+    <div class="card">
       <h2>Summary</h2>
       <div id="summary"></div>
     </div>
 
     <div class="card">
-      <h2>Confidence Chart</h2>
-      <canvas id="confidenceChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>Risk Chart</h2>
-      <canvas id="riskChart"></canvas>
-    </div>
-
-    <div class="card">
       <h2>Explanations</h2>
       <div id="explanations"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Confidence Chart</h2>
+        <canvas id="confidenceChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Risk Chart</h2>
+        <canvas id="riskChart"></canvas>
+      </div>
     </div>
   </div>
 
