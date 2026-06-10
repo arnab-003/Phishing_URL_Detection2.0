@@ -33,20 +33,7 @@ Content Script → Risk-based Popup
 Input: URL → Tokenizer → Padding(200) → Embedding(128)
 ↓ Parallel CNNs → MaxPool → Concat(384)
 ↓ Bidirectional GRU(256)
-↓ + Features(64) → Dense → prob_legit 
-
-
-**10 Handcrafted Features:**
-1. `LengthOfURL`
-2. `IsDomainIP`
-3. `ShannonEntropy`
-4. `HexPatternCnt`
-5. `DomainLengthOfURL`
-6. `LetterCntInURL`
-7. `URLLetterRatio`
-8. `DigitCntInURL`
-9. `KolmogorovComplexity`
-10. `Base64PatternCnt`
+ → Dense → prob_legit 
 
 ---
 
