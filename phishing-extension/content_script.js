@@ -1,5 +1,5 @@
 console.log("content_script loaded on", window.location.href);
-
+// data sends to pop up
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   if (!data || !data.label || !data.risk_level) return;
 
@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     return;
   }
 
-  const bgColor = isDanger ? "#b00020" : "#ff9800";
+  const bgColor = isDanger ? "#b00020" : "#ff9800";   
   const titleText = isDanger
     ? "Warning: This site looks like a phishing website"
     : "Caution: This site looks suspicious";
@@ -88,7 +88,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
 
   wrapper.appendChild(box);
   document.body.appendChild(wrapper);
-
+// stay button and goback button
   const stayBtn = document.getElementById("phish-guard-stay");
   const backBtn = document.getElementById("phish-guard-back");
   const moreInfoBtn = document.getElementById("phish-guard-moreinfo");
@@ -109,6 +109,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     };
   }
 
+  // more info button
   if (moreInfoBtn) {
     moreInfoBtn.addEventListener("click", () => {
       console.log("More Info clicked");

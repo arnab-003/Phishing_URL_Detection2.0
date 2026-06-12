@@ -1,3 +1,4 @@
+// for normalizing hostname of the url
 function normalizeHostname(url) {
   try {
     return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
@@ -6,6 +7,7 @@ function normalizeHostname(url) {
   }
 }
 
+// for normalize the url
 function normalizeUrl(url) {
   try {
     const parsed = new URL(url);
@@ -25,6 +27,7 @@ function normalizeUrl(url) {
   }
 }
 
+// displaying the url format
 function formatDisplayUrl(url) {
   try {
     const parsed = new URL(url);
@@ -37,6 +40,7 @@ function formatDisplayUrl(url) {
   }
 }
 
+// displaying the url in shorter format
 function getShortDisplayUrl(url, maxLength = 45) {
   try {
     const parsed = new URL(url);
@@ -68,6 +72,7 @@ function matchRule(url, rules = []) {
   });
 }
 
+// ignore this url's
 function isIgnoredUrl(url) {
   return (
     !url ||
@@ -79,6 +84,7 @@ function isIgnoredUrl(url) {
   );
 }
 
+//  create a prediction object for the current tab
 function buildPrediction(tabId, tabUrl, data = {}) {
   const rawLabel = String(data.label || "").trim().toLowerCase();
   let riskLevel = String(data.risk_level || "").trim().toLowerCase();
@@ -116,6 +122,7 @@ function buildPrediction(tabId, tabUrl, data = {}) {
   };
 }
 
+// store the prediction iin chrome local storage
 function storeAndNotify(tabId, tabUrl, data) {
   const payload = buildPrediction(tabId, tabUrl, data);
 
@@ -128,6 +135,7 @@ function storeAndNotify(tabId, tabUrl, data) {
   });
 }
 
+// mark as safe
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status !== "complete" || !tab.url) return;
   if (isIgnoredUrl(tab.url)) return;
@@ -147,7 +155,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       });
       return;
     }
-
+    
+    //  mark as danger
     if (matchRule(tab.url, dangerUrls)) {
       storeAndNotify(tabId, tab.url, {
         label: "PHISHING",
@@ -160,6 +169,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       return;
     }
 
+    // fetch json data
     fetch("http://localhost:8000/predict", {
       method: "POST",
       headers: {
@@ -177,7 +187,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       .catch((err) => {
         console.error("Prediction request failed:", err);
 
-        const unavailablePayload = buildPrediction(tabId, tab.url, {
+        const unavailablePayload = buildPrediction(tabId, tab.url, {  // suppose when the server is not running
           label: "UNAVAILABLE",
           prob_legit: null,
           risk_level: "unknown",

@@ -8,10 +8,11 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json
 
-
+## call the .h5 model
 MODEL_PATH = "model.h5"
 MAX_LEN = 200
 
+#predefine some domains for explanations
 SHORTENER_DOMAINS = {
     "bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly", "is.gd",
     "buff.ly", "rb.gy", "cutt.ly", "rebrand.ly", "shorturl.at"
@@ -24,6 +25,7 @@ SUSPICIOUS_KEYWORDS = {
 }
 
 
+##load the model
 model = keras.models.load_model(MODEL_PATH)
 
 tokenizer = None
@@ -46,16 +48,17 @@ if not hasattr(tokenizer, "texts_to_sequences"):
         "Use a real Keras tokenizer saved as tokenizer.pkl or tokenizer.json."
     )
 
-
+##ip address check
 def is_ip_address(hostname: str) -> bool:
     return bool(re.fullmatch(r"\d{1,3}(\.\d{1,3}){3}", hostname or ""))
 
-
+# total subdomain
 def count_subdomains(hostname: str) -> int:
     parts = [p for p in (hostname or "").split(".") if p]
     return max(0, len(parts) - 2)
 
 
+#url signals
 def extract_url_signals(url: str):
     parsed = urlparse(url)
     hostname = (parsed.hostname or "").lower()
@@ -86,6 +89,7 @@ def extract_url_signals(url: str):
     return signals
 
 
+## function for explanations
 def build_explanations(url: str, label: str, prob_legit: float):
     s = extract_url_signals(url)
     explanations = []
@@ -158,6 +162,7 @@ def build_explanations(url: str, label: str, prob_legit: float):
     return explanations[:5]
 
 
+## predict url 
 def predict_url(url: str):
     url = str(url).strip()
 
@@ -182,7 +187,7 @@ def predict_url(url: str):
         label = "phishing"
         risk_level = "danger"
 
-    explanations = build_explanations(url, label, prob_legit)
+    explanations = build_explanations(url, label, prob_legit)  ##call the explanation
 
     if label == "safe":
         reason = "URL pattern appears legitimate."
@@ -190,6 +195,8 @@ def predict_url(url: str):
         reason = "URL contains unusual patterns."
     else:
         reason = "URL matches phishing-like patterns."
+
+    ## return format
 
     return {
         "url": url,

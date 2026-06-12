@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const moreInfoBtn = document.getElementById("moreInfoBtn");
   const manualActionRow = document.getElementById("manualActionRow");
 
+//  normalize the host name
   function normalizeHostname(url) {
     try {
       return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
@@ -15,7 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function normalizeUrl(url) {
+
+  // normalize the url
+  function normalizeUrl(url) {   
   try {
     const parsed = new URL(url);
     parsed.hash = "";
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 }
 
+// display the url format
 function formatDisplayUrl(url) {
   try {
     const parsed = new URL(url);
@@ -83,6 +87,7 @@ function formatDisplayUrl(url) {
     }
   }
 
+  // if not prediction done
   function renderPrediction(data) {
     if (!data) {
       statusEl.textContent = "No prediction data available.";
@@ -113,6 +118,7 @@ function formatDisplayUrl(url) {
     });
   }
 
+  // when server is not running 
   function markRule(url, type) {
     const hostname = normalizeHostname(url);
     if (!hostname) {
@@ -133,6 +139,7 @@ function formatDisplayUrl(url) {
         dangerUrls.push(hostname);
       }
 
+      // explanations for marked safe or danger
       chrome.storage.local.set({ safeUrls, dangerUrls }, () => {
         statusEl.textContent =
           type === "safe"
@@ -159,6 +166,7 @@ function formatDisplayUrl(url) {
 
   loadPrediction();
 
+  // more info bbutton
   if (moreInfoBtn) {
     moreInfoBtn.addEventListener("click", () => {
       chrome.tabs.create({
@@ -167,12 +175,13 @@ function formatDisplayUrl(url) {
     });
   }
 
-
+// print legitimicy score
   scoreEl.textContent =
   data.prob_legit === null || data.prob_legit === undefined
     ? "Legitimacy: N/A"
-    : `Legitimacy: ${(Number(data.prob_legit) * 100).toFixed(2)}%`;
+    : `Legitimacy: ${(Number(data.prob_legit) * 100).toFixed(2)}%`;  
 
+    // when server is not available
 riskEl.textContent =
   data.label === "UNAVAILABLE"
     ? "Risk: server unavailable"

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from inference_core import predict_url
 
-app = FastAPI(title="Phishing URL Detector API")
+app = FastAPI(title="Phishing URL Detector API")   ##connect the backend with FastAPI
 
 class URLRequest(BaseModel):
     url: str
