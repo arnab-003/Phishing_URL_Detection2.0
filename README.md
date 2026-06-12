@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Enhanced Real-Time Phishing URL Classification Leveraging a Hybrid CNN-BiGRU Model 🚨
 
 
@@ -160,3 +161,6 @@ Skills Demonstrated: Deep Learning, FastAPI, Chrome Extensions, Cybersecurity
 
 
 
+=======
+# Phishing_URL_Detection2.0
+>>>>>>> f087d99b60844c401f7e923affea3db948b58c7e
