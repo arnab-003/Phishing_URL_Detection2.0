@@ -16,40 +16,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function normalizeUrl(url) {
-    try {
-      const parsed = new URL(url);
-      parsed.hash = "";
-      parsed.hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+  try {
+    const parsed = new URL(url);
+    parsed.hash = "";
+    parsed.hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
 
-      let normalized = parsed.origin + parsed.pathname;
-      if (parsed.search) normalized += parsed.search;
+    let normalized = parsed.origin + parsed.pathname;
+    if (parsed.search) normalized += parsed.search;
 
-      if (normalized.endsWith("/") && parsed.pathname !== "/") {
-        normalized = normalized.slice(0, -1);
-      }
-
-      return normalized.toLowerCase();
-    } catch {
-      return "";
+    if (normalized.endsWith("/") && parsed.pathname !== "/") {
+      normalized = normalized.slice(0, -1);
     }
+
+    return normalized.toLowerCase();
+  } catch {
+    return "";
   }
+}
 
-  function getShortDisplayUrl(url, maxLength = 45) {
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
-      const path = parsed.pathname === "/" ? "" : parsed.pathname;
-      const shortBase = `${host}${path}`;
-
-      if (shortBase.length <= maxLength) {
-        return shortBase;
-      }
-
-      return `${shortBase.slice(0, maxLength - 3)}...`;
-    } catch {
-      return url || "";
-    }
+function formatDisplayUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    const pathname = parsed.pathname || "/";
+    const search = parsed.search || "";
+    return `${hostname}${pathname}${search}`;
+  } catch {
+    return "";
   }
+}
 
   function clearManualButtons() {
     manualActionRow.innerHTML = "";

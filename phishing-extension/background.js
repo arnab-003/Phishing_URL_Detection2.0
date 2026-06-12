@@ -25,6 +25,18 @@ function normalizeUrl(url) {
   }
 }
 
+function formatDisplayUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    const pathname = parsed.pathname || "/";
+    const search = parsed.search || "";
+    return `${hostname}${pathname}${search}`;
+  } catch {
+    return "";
+  }
+}
+
 function getShortDisplayUrl(url, maxLength = 45) {
   try {
     const parsed = new URL(url);
@@ -90,7 +102,7 @@ function buildPrediction(tabId, tabUrl, data = {}) {
     tabId,
     timestamp: Date.now(),
     short_url: getShortDisplayUrl(tabUrl),
-    normalized_url: normalizeUrl(tabUrl),
+    normalized_url: formatDisplayUrl(tabUrl),
     normalized_host: normalizeHostname(tabUrl),
     label: String(data.label || "UNKNOWN").toUpperCase(),
     prob_legit:
