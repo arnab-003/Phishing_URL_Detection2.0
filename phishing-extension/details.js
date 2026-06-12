@@ -1,3 +1,5 @@
+//  Details page logic
+
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.local.get(["latestPrediction"], (res) => {
     const data = res.latestPrediction;
