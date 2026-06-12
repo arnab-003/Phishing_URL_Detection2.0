@@ -14,6 +14,10 @@ Real-time phishing detection using hybrid **CNN+BiGRU** deep learning model inte
 | Google, Amazon ✅ | Odd URLs | `g00gle-phish.tk` ❌ |
 | `prob_legit > 0.7` | `0.3 < prob_legit < 0.7` | `prob_legit < 0.3` |
 
+- **Detailed analysis report** showing prediction and valid reason.
+- **Manual feedback option** to mark a website as **safe** or **dangerous**.
+- **Risk-based popup** with clear explanation and confidence score.
+
 ---
 
 ## 🏗️ **Architecture**
@@ -34,20 +38,7 @@ Content Script → Risk-based Popup
 Input: URL → Tokenizer → Padding(200) → Embedding(128)
 ↓ Parallel CNNs → MaxPool → Concat(384)
 ↓ Bidirectional GRU(256)
-↓ + Features(64) → Dense → prob_legit 
-
-
-**10 Handcrafted Features:**
-1. `LengthOfURL`
-2. `IsDomainIP`
-3. `ShannonEntropy`
-4. `HexPatternCnt`
-5. `DomainLengthOfURL`
-6. `LetterCntInURL`
-7. `URLLetterRatio`
-8. `DigitCntInURL`
-9. `KolmogorovComplexity`
-10. `Base64PatternCnt`
+ → Dense → prob_legit 
 
 ---
 
