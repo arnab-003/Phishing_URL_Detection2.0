@@ -171,4 +171,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+
+  scoreEl.textContent =
+  data.prob_legit === null || data.prob_legit === undefined
+    ? "Legitimacy: N/A"
+    : `Legitimacy: ${(Number(data.prob_legit) * 100).toFixed(2)}%`;
+
+riskEl.textContent =
+  data.label === "UNAVAILABLE"
+    ? "Risk: server unavailable"
+    : `Risk: ${data.risk_level || "unknown"}`;
 });

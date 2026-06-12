@@ -93,7 +93,10 @@ function buildPrediction(tabId, tabUrl, data = {}) {
     normalized_url: normalizeUrl(tabUrl),
     normalized_host: normalizeHostname(tabUrl),
     label: String(data.label || "UNKNOWN").toUpperCase(),
-    prob_legit: Number(data.prob_legit ?? 0),
+    prob_legit:
+      data.prob_legit === null || data.prob_legit === undefined
+        ? null
+        : Number(data.prob_legit),
     risk_level: riskLevel,
     explanations,
     trusted_by_user: Boolean(data.trusted_by_user),
@@ -161,12 +164,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       })
       .catch((err) => {
         console.error("Prediction request failed:", err);
-        storeAndNotify(tabId, tab.url, {
-          label: "SUSPICIOUS",
-          prob_legit: 0.5,
-          risk_level: "suspicious",
-          explanations: ["Could not contact the local prediction server."]
+
+        const unavailablePayload = buildPrediction(tabId, tab.url, {
+          label: "UNAVAILABLE",
+          prob_legit: null,
+          risk_level: "unknown",
+          explanations: ["Local detection server is offline or unreachable."]
         });
+
+        chrome.storage.local.set({ latestPrediction: unavailablePayload });
       });
   });
 });
