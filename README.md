@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Enhanced Real-Time Phishing URL Classification Leveraging a Hybrid CNN-BiGRU Model 🚨
 
 
@@ -73,28 +72,26 @@ curl -X POST "http://localhost:8000/predict" \
 
 | Metric         | Value  |
 | -------------- | ------ |
-| Test Accuracy  | 99.92% |
-| Test Precision | 99.86% |
-| Test Recall    | 99.99% |
-| Test AUC       | 99.98% |
-| Test F1-Score  | 99.92% |
+| Test Accuracy  | 97.82% |
+| Test Precision | 97.82% |
+| Test Recall    | 97.82% |
+| Test AUC       | 99.87% |
+| Test F1-Score  | 97.82% |
 
-Dataset: 827,993 URLs (balanced 50.55% legit, 49.45% phishing)
+Dataset: 16Lakh+ URLs (balanced 51.9% legit, 48.1% phishing)
 
 ---
 🧠 **How It Works**
 ✅ SAFE: https://myntra.com
 1. Extension → POST {"url": "https://myntra.com"}
-2. Features: Length=18, IsDomainIP=0, Entropy=3.2
-3. CNN: "https", "myntra", ".com" → legit patterns
-4. BiGRU: clean scheme→brand→TLD → prob_legit=0.92
-5. > 0.7 → "safe" → NO POPUP ✅
+2. CNN: "https", "myntra", ".com" → legit patterns
+3. BiGRU: clean scheme→brand→TLD → prob_legit=0.92
+4. > 0.7 → "safe" → NO POPUP ✅
 
 ❌ DANGER: http://g00gle-phish123.tk
-1. Features: Length=25, bad TLD=.tk, high entropy
-2. CNN: "g00gle" (typosquat), ".tk" (suspicious)
-3. BiGRU: brand→random→badTLD → prob_legit=0.12
-4. < 0.3 → "danger" → RED POPUP ❌
+1. CNN: "g00gle" (typosquat), ".tk" (suspicious)
+2. BiGRU: brand→random→badTLD → prob_legit=0.12
+3. < 0.3 → "danger" → RED POPUP ❌
 
 ---
 
@@ -112,13 +109,12 @@ Dataset: 827,993 URLs (balanced 50.55% legit, 49.45% phishing)
 FastAPI + Uvicorn + TensorFlow 2.15 + Keras
 CNN(128 filters, kernels=) + BiGRU(128)[3][5][8]
 Chrome Extension API v3
-827K balanced dataset
+16Lakh+ balanced dataset
 
 ---
 ## 📈 Training Details
 
-Dataset Split: Train(558K) | Val(103K) | Test(165K)
-Batch Size: 128 | Epochs: 15
+Batch Size: 256 | Epochs: 15
 Optimizer: Adam(lr=0.001) | Loss: Binary Crossentropy
 Early Stopping: Validation AUC
 
@@ -148,10 +144,3 @@ Skills Demonstrated: Deep Learning, FastAPI, Chrome Extensions, Cybersecurity
 
 
 
-
-
-
-
-=======
-# Phishing_URL_Detection2.0
->>>>>>> f087d99b60844c401f7e923affea3db948b58c7e
