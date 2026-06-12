@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Enhanced Real-Time Phishing URL Classification Leveraging a Hybrid CNN-BiGRU Model 🚨
 
 
